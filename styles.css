@@ -77,6 +77,16 @@ p { color: var(--muted); line-height: 1.5; }
 .palette-tile { cursor: grab; min-height: 5.5rem; }
 .palette-tile:active { cursor: grabbing; }
 
+.tip-box {
+  margin-top: 1rem;
+  padding: .85rem 1rem;
+  border-radius: 18px;
+  background: #fff7d6;
+  color: var(--ink);
+}
+
+.tip-box ol { margin: .45rem 0 0; padding-left: 1.2rem; color: var(--muted); line-height: 1.4; }
+
 .board-header {
   display: flex;
   justify-content: space-between;
@@ -87,13 +97,14 @@ p { color: var(--muted); line-height: 1.5; }
 
 .legend { display: flex; gap: .75rem; flex-wrap: wrap; font-weight: 800; }
 .legend i { display: inline-block; width: .9rem; height: .9rem; border-radius: 50%; margin-right: .3rem; }
-.start-dot { background: #00a86b; }
-.goal-dot { background: #e63946; }
+.bike-dot { background: #00a86b; }
+.car-dot { background: #f77f00; }
+.free-dot { background: #fff; border: 2px dashed var(--blue); }
 
 .board {
-  --size: min(10.5vw, 6.5rem);
+  --size: min(9.6vw, 6rem);
   display: grid;
-  grid-template-columns: repeat(7, var(--size));
+  grid-template-columns: repeat(8, var(--size));
   grid-template-rows: repeat(5, var(--size));
   justify-content: center;
   gap: .45rem;
@@ -107,23 +118,38 @@ p { color: var(--muted); line-height: 1.5; }
   border-color: var(--grid);
   background: rgba(255,255,255,.42);
 }
+.cell:disabled { color: inherit; }
+.cell.free-field {
+  cursor: pointer;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,.92) 0 10px, rgba(216,236,255,.88) 10px 20px);
+  border-color: var(--blue);
+}
+.cell.free-field::after {
+  content: "+";
+  position: absolute;
+  inset: auto .45rem .2rem auto;
+  color: rgba(25, 50, 77, .35);
+  font-size: 1.6rem;
+  font-weight: 900;
+}
 .cell.drop-target { outline: 5px solid rgba(58, 134, 255, .35); }
 .cell.start::after, .cell.goal::after {
   position: absolute;
   z-index: 4;
   bottom: .35rem;
   right: .35rem;
-  width: 1.25rem;
+  min-width: 1.25rem;
   height: 1.25rem;
-  border-radius: 50%;
+  padding: 0 .25rem;
+  border-radius: 999px;
   display: grid;
   place-items: center;
   color: white;
-  font-size: .75rem;
+  font-size: .72rem;
   font-weight: 900;
 }
-.cell.start::after { content: "S"; background: #00a86b; }
-.cell.goal::after { content: "Z"; background: #e63946; }
+.cell.start::after { content: "Start"; background: #00a86b; }
+.cell.goal::after { content: "Ziel"; background: #e63946; }
 
 .road-horizontal::before, .road-vertical::before, .curve::before, .crossing::before, .traffic-light::before, .sign::before, .school::before {
   content: "";
@@ -133,15 +159,25 @@ p { color: var(--muted); line-height: 1.5; }
 }
 .road-horizontal::before { inset: 36% 0; }
 .road-vertical::before { inset: 0 36%; }
+.side-road::before { background: #6f7782; }
 .curve::before { width: 64%; height: 64%; right: 0; bottom: 0; border-radius: 100% 0 0 0; }
 .crossing::before, .traffic-light::before { inset: 36% 0; box-shadow: 0 -999px 0 999px transparent; }
 .crossing::after, .traffic-light::after { content: ""; position: absolute; inset: 0 36%; background: var(--road); z-index: 1; }
 
-.road-horizontal span, .road-vertical span, .curve span, .crossing span {
+.road-horizontal > span:first-child, .road-vertical > span:first-child, .curve > span:first-child, .crossing > span:first-child {
   position: absolute; z-index: 2; inset: 48% 12%; border-top: 4px dashed #fff6a5;
 }
-.road-vertical span { inset: 12% 48%; border-top: 0; border-left: 4px dashed #fff6a5; }
-.curve span { inset: auto 12% 46% 42%; border-top: 4px dashed #fff6a5; transform: rotate(45deg); }
+.road-vertical > span:first-child { inset: 12% 48%; border-top: 0; border-left: 4px dashed #fff6a5; }
+.curve > span:first-child { inset: auto 12% 46% 42%; border-top: 4px dashed #fff6a5; transform: rotate(45deg); }
+
+.waiting-car {
+  position: absolute;
+  z-index: 5;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,.25));
+}
 
 .traffic-light .light {
   position: absolute;
@@ -152,11 +188,13 @@ p { color: var(--muted); line-height: 1.5; }
   border-radius: 50%;
   border: 2px solid #222;
 }
+.free-field.traffic-light::before, .free-field.traffic-light::after { content: none; }
+
 .traffic-light .red { top: 17%; background: #ef233c; }
 .traffic-light .yellow { top: 41%; background: #ffd60a; }
 .traffic-light .green { top: 65%; background: #2dc653; }
 
-.sign span, .school span {
+.sign span, .stop-sign span, .yield-sign span, .bike-sign span {
   position: absolute;
   z-index: 3;
   left: 50%;
@@ -164,15 +202,19 @@ p { color: var(--muted); line-height: 1.5; }
   transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
-  width: 48%;
-  height: 48%;
+  width: 56%;
+  height: 56%;
   border-radius: 50%;
   border: 5px solid #e63946;
   background: #fff;
   font-weight: 900;
   color: #19324d;
+  font-size: clamp(.8rem, 1.8vw, 1.2rem);
 }
-.school span { border-radius: 12px; border-color: var(--blue); font-size: 1.8rem; }
+.stop-sign span { border-radius: 14px; background: #e63946; color: #fff; border-color: #fff; outline: 4px solid #e63946; }
+.yield-sign span { color: #e63946; font-size: clamp(2rem, 4vw, 3.2rem); border: 0; background: transparent; }
+.bike-sign span { border-color: var(--blue); font-size: clamp(1.7rem, 3vw, 2.4rem); }
+.free-field[data-tile]::after { content: ""; }
 
 .bike {
   position: absolute;
@@ -181,6 +223,12 @@ p { color: var(--muted); line-height: 1.5; }
   transform: translate(-50%, -50%);
   transition: left .5s linear, top .5s linear;
   filter: drop-shadow(0 8px 8px rgba(0,0,0,.2));
+}
+.bike.waiting { animation: ring 1.4s ease-in-out infinite; }
+
+@keyframes ring {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-5deg); }
+  50% { transform: translate(-50%, -50%) rotate(5deg); }
 }
 
 .primary-button, .secondary-button {
@@ -199,5 +247,5 @@ p { color: var(--muted); line-height: 1.5; }
 @media (max-width: 880px) {
   .hero, .board-header { flex-direction: column; }
   .workspace { grid-template-columns: 1fr; }
-  .board { --size: min(12vw, 5.4rem); gap: .3rem; padding: .5rem; }
+  .board { --size: min(11vw, 5.2rem); gap: .3rem; padding: .5rem; }
 }
