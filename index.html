@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fahrrad-Puzzle: Sicher zur Schule</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Verkehr üben · 2. Klasse</p>
+      <h1>Baue deine Fahrradstrecke!</h1>
+      <p>Ziehe Straßen, Kreuzungen, Ampeln und Schilder auf das Spielfeld. Wenn deine Strecke fertig ist, fährt das Fahrrad los.</p>
+    </div>
+    <button id="startRide" class="primary-button">🚲 Fahrrad starten</button>
+  </header>
+
+  <main class="workspace" aria-label="Fahrrad-Puzzle Arbeitsbereich">
+    <aside class="toolbox" aria-label="Puzzle-Elemente">
+      <h2>Puzzle-Teile</h2>
+      <p>Ziehe ein Teil mit der Maus oder dem Finger auf ein Feld.</p>
+      <div class="tile-palette" id="tilePalette">
+        <button class="palette-tile road-horizontal" draggable="true" data-tile="road-horizontal" aria-label="Gerade Straße waagerecht"><span></span></button>
+        <button class="palette-tile road-vertical" draggable="true" data-tile="road-vertical" aria-label="Gerade Straße senkrecht"><span></span></button>
+        <button class="palette-tile curve" draggable="true" data-tile="curve" aria-label="Kurve"><span></span></button>
+        <button class="palette-tile crossing" draggable="true" data-tile="crossing" aria-label="Kreuzung"><span></span></button>
+        <button class="palette-tile traffic-light" draggable="true" data-tile="traffic-light" aria-label="Kreuzung mit Ampel"><span class="light red"></span><span class="light yellow"></span><span class="light green"></span></button>
+        <button class="palette-tile sign" draggable="true" data-tile="sign" aria-label="Verkehrsschild"><span>30</span></button>
+        <button class="palette-tile school" draggable="true" data-tile="school" aria-label="Schulzone"><span>🏫</span></button>
+      </div>
+      <div class="actions">
+        <button id="clearBoard" class="secondary-button">Alles löschen</button>
+        <button id="demoBoard" class="secondary-button">Beispiel legen</button>
+      </div>
+    </aside>
+
+    <section class="board-card">
+      <div class="board-header">
+        <div>
+          <h2>Dein Spielfeld</h2>
+          <p id="statusText">Lege mindestens 6 Teile, dann starte das Fahrrad.</p>
+        </div>
+        <div class="legend" aria-label="Legende">
+          <span><i class="start-dot"></i>Start</span>
+          <span><i class="goal-dot"></i>Ziel</span>
+        </div>
+      </div>
+      <div id="board" class="board" aria-label="Legefläche für die Fahrradstrecke"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
